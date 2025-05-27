@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3Dプリンターで挑戦した「ジッパー」プロジェクト - 創造と失敗の記録</title>
+    <style>
+        :root {
+            --bg-color: #f5f5f0;
+            --text-color: #333333;
+            --secondary-text: #5a5a5a;
+            --primary-color: #6b8e23;
+            --code-bg: #e8e8d8;
+            --border-color: #c5c5a5;
+            --card-bg: #f0f0e0;
+        }
+        
+        .dark-mode {
+            --bg-color: #2a2a20;
+            --text-color: #e0e0d0;
+            --secondary-text: #a0a090;
+            --primary-color: #8ba446;
+            --code-bg: #3a3a30;
+            --border-color: #555545;
+            --card-bg: #333325;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Noto Sans JP', sans-serif;
+            line-height: 1.7;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            transition: background-color 0.3s, color 0.3s;
+            padding: 0;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 40px;
+        }
+        
+        .blog-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .blog-title a {
+            text-decoration: none;
+            color: var(--text-color);
+        }
+        
+        .language-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+        }
+        
+        .language-toggle:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .article-header {
+            margin-bottom: 40px;
+        }
+        
+        .article-title {
+            font-size: 2.2rem;
+            line-height: 1.3;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .article-meta {
+            display: flex;
+            gap: 20px;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin-bottom: 30px;
+        }
+        
+        .article-image {
+            width: 100%;
+            max-height: 500px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 30px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .toc {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 40px;
+            border: 1px solid var(--border-color);
+        }
+        
+        .toc-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--primary-color);
+        }
+        
+        .toc-list {
+            list-style: none;
+        }
+        
+        .toc-list li {
+            margin-bottom: 10px;
+        }
+        
+        .toc-list a {
+            text-decoration: none;
+            color: var(--text-color);
+            transition: color 0.3s;
+        }
+        
+        .toc-list a:hover {
+            color: var(--primary-color);
+        }
+        
+        .article-content {
+            font-size: 1.05rem;
+            margin-bottom: 60px;
+        }
+        
+        .article-content p {
+            margin-bottom: 1.8em;
+        }
+        
+        .article-content h2 {
+            font-size: 1.6rem;
+            margin: 2.5em 0 1.2em;
+            font-weight: 600;
+            color: var(--text-color);
+            padding-bottom: 0.3em;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .article-content h3 {
+            font-size: 1.3rem;
+            margin: 2em 0 1em;
+            font-weight: 600;
+        }
+        
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            margin: 2.5em 0;
+            border-radius: 8px;
+        }
+        
+        .article-content blockquote {
+            border-left: 4px solid var(--primary-color);
+            padding: 20px;
+            margin: 2.5em 0;
+            background-color: var(--card-bg);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+        
+        .article-content pre {
+            background-color: var(--code-bg);
+            padding: 20px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 2.5em 0;
+            font-family: 'Fira Code', 'Courier New', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .process-diagram {
+            width: 100%;
+            max-width: 600px;
+            margin: 2em auto;
+            display: block;
+        }
+        
+        .image-caption {
+            text-align: center;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            margin-top: -1.5em;
+            margin-bottom: 2em;
+        }
+        
+        .article-tags {
+            display: flex;
+            gap: 10px;
+            margin: 50px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            background-color: var(--card-bg);
+            color: var(--primary-color);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            font-weight: 500;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s;
+        }
+        
+        .tag:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        footer {
+            border-top: 1px solid var(--border-color);
+            padding: 40px 0;
+            color: var(--secondary-text);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .article-title {
+                font-size: 1.8rem;
+            }
+            
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="blog-title"><a href="/" id="blogTitle">創造と失敗の記録</a></h1>
+            <button class="language-toggle" id="languageToggle">
+                <span id="languageText">English</span>
+            </button>
+        </header>
+        
+        <main>
+            <article>
+                <div class="article-header">
+                    <h1 class="article-title" id="articleTitle">3Dプリンターで挑戦した「ジッパー」プロジェクト</h1>
+                    <div class="article-meta">
+                        <span id="publishDate">公開日: 2023年12月10日</span>
+                        <span id="updateDate">更新日: 2023年12月15日</span>
+                        <span id="category">カテゴリー: 3Dプリント</span>
+                    </div>
+                    <img src="https://source.unsplash.com/random/800x400/?3dprinter,zipper" alt="3Dプリントされたジッパーのプロトタイプ" class="article-image">
+                </div>
+                
+                <div class="toc">
+                    <h3 class="toc-title" id="tocTitle">目次</h3>
+                    <ul class="toc-list">
+                        <li><a href="#overview" id="tocOverview">プロジェクトの概要</a></li>
+                        <li><a href="#define" id="tocDefine">ジッパーの定義</a></li>
+                        <li><a href="#design" id="tocDesign">3Dデザインと試行錯誤</a></li>
+                        <li><a href="#test" id="tocTest">テストとフィードバック</a></li>
+                        <li><a href="#improve" id="tocImprove">改善と次の挑戦</a></li>
+                        <li><a href="#conclusion" id="tocConclusion">まとめ</a></li>
+                    </ul>
+                </div>
+                
+                <div class="article-content">
+                    <h2 id="overview">プロジェクトの概要</h2>
+                    <p id="overviewText1">このプロジェクトは、First-Year Seminarと呼ばれる１年生必修の単位で、４０以上ある授業の中からそれぞれ興味のある授業を選びます。興味関心を広げることが目的のため、自分の専攻に関係なく自由な選択ができることが特徴です。</p>
+                    
+                    <p id="overviewText2">私が履修した「Creativity and Making Failure」では、創造性豊な工作やアクティビティに取り組んで、失敗を見つけ、どのように改善していくかを考えるスキルを養うことが目標です。</p>
+                    
+                    <p id="overviewText3">今回は、最終課題として取り組んだ3Dプリンターを用いたプロジェクト、「ジッパー」として機能するデザインとその過程について紹介します。</p>
+                    
+                    <h2 id="define">ジッパーの定義</h2>
+                    <p id="defineText1">私たちの授業で、工作に関わらずどんなプロジェクトでも下の図のようなプロセスによって進められると教わります。</p>
+                    
+                    <img src="https://source.unsplash.com/random/600x400/?diagram,process" alt="プロジェクト進行プロセスの図" class="process-diagram">
+                    <p class="image-caption" id="diagramCaption">図: プロジェクト進行プロセス (Define → Ideate → Prototype → Test → Improve)</p>
+                    
+                    <p id="defineText2">この図は「Define（定義）」か「Ideate（発想）」のステップから始まり、方向性を決め、試作を完成させ、エラーが見つかる。そのエラーを克服するために初めのステップに戻るというサイクルです。</p>
+                    
+                    <h3 id="defineSubtitle">「定義」ステップ</h3>
+                    <p id="defineText3">ジッパーとは何か？それを考えたとき、私にとってのジッパーは「開閉可能な留め具」であり、「スライダーを通すことで、互いに噛み合う仕組みを持つもの」でした。この基本的な構造を再現するため、以下の要素を設計しました。</p>
+                    
+                    <ul id="defineList1">
+                        <li><strong>歯の構造</strong>: 一つの歯は片側が凸、反対側が凹になっており、スライダーを通すことで互いにロックされる。</li>
+                        <li><strong>スライダーの調整</strong>: スムーズに歯がかみ合うよう、適切な形状と角度を設計。</li>
+                    </ul>
+                    
+                    <h2 id="design">3Dデザインと試行錯誤</h2>
+                    <p id="designText1">デザインが決まったら、次は3Dプリンターでの出力です。プリント時の密度や方向を調整しながら、</p>
+                    
+                    <ul id="designList1">
+                        <li>歯は柔軟性を持たせる</li>
+                        <li>スライダーは十分な剛性を持たせる</li>
+                    </ul>
+                    
+                    <p id="designText2">というバランスを模索しました。しかし、初期のモデルでは思うようにスライドしなかったり、歯が壊れやすかったりと、多くの課題が発生しました。そこで、</p>
+                    
+                    <ul id="designList2">
+                        <li>デザイン・寸法の微調整</li>
+                        <li>プリント時の密度、向きの調整</li>
+                        <li>材料の選定</li>
+                    </ul>
+                    
+                    <p id="designText3">といった工程を繰り返し、何度も試作と修正を重ねました。</p>
+                    
+                    <img src="https://source.unsplash.com/random/800x400/?3dprinting,prototype" alt="3Dプリントの試作過程" class="article-image">
+                    <p class="image-caption" id="prototypeCaption">試作を重ねる過程で生まれた様々なバージョンのジッパー</p>
+                    
+                    <h2 id="test">テストとフィードバック</h2>
+                    <p id="testText1">最終発表では、外部の人々を招いて、ウォークイン形式でジッパーを試してもらいました。その際のフィードバックは、</p>
+                    
+                    <ul id="testList1">
+                        <li>「ジッパーとして機能するが、実用的ではない」</li>
+                        <li>「見た目が少しダサい？」</li>
+                        <li>「スライド時がスムーズではない」</li>
+                    </ul>
+                    
+                    <p id="testText2">といったものでした。</p>
+                    
+                    <blockquote id="quoteText">
+                        「最初のプロトタイプが完璧である必要はありません。重要なのは、フィードバックを得て、それを次の改善に活かすことです」 - 教授のアドバイス
+                    </blockquote>
+                    
+                    <h2 id="improve">改善と次の挑戦</h2>
+                    <p id="improveText1">フィードバックを受けて、シンポジウムに向けて新しいバージョンに挑戦します。</p>
+                    
+                    <p id="improveText2">ジッパーのデザインとスムーズさを改良しました。新しいバージョンはより滑らかで、見た目も洗練されたものになりました。しかし、これはまだプロトタイプです。</p>
+                    
+                    <p id="improveText3">次の挑戦として、</p>
+                    
+                    <ul id="improveList1">
+                        <li>異なる素材の使用</li>
+                        <li>実際の使用例見据えた強度や実用性の改良</li>
+                    </ul>
+                    
+                    <p id="improveText4">に取り組みたいと考えています。</p>
+                    
+                    <img src="https://source.unsplash.com/random/800x400/?improvement,design" alt="改良後のジッパーデザイン" class="article-image">
+                    <p class="image-caption" id="improvementCaption">改良を重ねた最新バージョンのジッパー</p>
+                    
+                    <h2 id="conclusion">まとめ</h2>
+                    <p id="conclusionText">エラーは失敗ではなく、プロセスの一部です。試行錯誤を繰り返しながら、より良いものを生み出していく。その過程こそが、このプロジェクトの核心でした。私は、この挑戦を続けることにワクワクしています。</p>
+                </div>
+                
+                <div class="article-tags">
+                    <a href="/tag/3dprinting" class="tag" id="tag1">3Dプリント</a>
+                    <a href="/tag/design" class="tag" id="tag2">デザイン</a>
+                    <a href="/tag/prototyping" class="tag" id="tag3">プロトタイピング</a>
+                    <a href="/tag/engineering" class="tag" id="tag4">エンジニアリング</a>
+                </div>
+            </article>
+        </main>
+        
+        <footer>
+            <p id="footerText">© 2023 創造と失敗の記録. All rights reserved.</p>
+        </footer>
+    </div>
+    
+    <script>
+        const languageToggle = document.getElementById('languageToggle');
+        const languageText = document.getElementById('languageText');
+        
+        // テキストの翻訳データ
+        const translations = {
+            'ja': {
+                'blogTitle': '創造と失敗の記録',
+                'languageText': 'English',
+                'articleTitle': '3Dプリンターで挑戦した「ジッパー」プロジェクト',
+                'publishDate': '公開日: 2023年12月10日',
+                'updateDate': '更新日: 2023年12月15日',
+                'category': 'カテゴリー: 3Dプリント',
+                'tocTitle': '目次',
+                'tocOverview': 'プロジェクトの概要',
+                'tocDefine': 'ジッパーの定義',
+                'tocDesign': '3Dデザインと試行錯誤',
+                'tocTest': 'テストとフィードバック',
+                'tocImprove': '改善と次の挑戦',
+                'tocConclusion': 'まとめ',
+                'overviewText1': 'このプロジェクトは、First-Year Seminarと呼ばれる１年生必修の単位で、４０以上ある授業の中からそれぞれ興味のある授業を選びます。興味関心を広げることが目的のため、自分の専攻に関係なく自由な選択ができることが特徴です。',
+                'overviewText2': '私が履修した「Creativity and Making Failure」では、創造性豊な工作やアクティビティに取り組んで、失敗を見つけ、どのように改善していくかを考えるスキルを養うことが目標です。',
+                'overviewText3': '今回は、最終課題として取り組んだ3Dプリンターを用いたプロジェクト、「ジッパー」として機能するデザインとその過程について紹介します。',
+                'defineText1': '私たちの授業で、工作に関わらずどんなプロジェクトでも下の図のようなプロセスによって進められると教わります。',
+                'diagramCaption': '図: プロジェクト進行プロセス (Define → Ideate → Prototype → Test → Improve)',
+                'defineText2': 'この図は「Define（定義）」か「Ideate（発想）」のステップから始まり、方向性を決め、試作を完成させ、エラーが見つかる。そのエラーを克服するために初めのステップに戻るというサイクルです。',
+                'defineSubtitle': '「定義」ステップ',
+                'defineText3': 'ジッパーとは何か？それを考えたとき、私にとってのジッパーは「開閉可能な留め具」であり、「スライダーを通すことで、互いに噛み合う仕組みを持つもの」でした。この基本的な構造を再現するため、以下の要素を設計しました。',
+                'defineList1': [
+                    '<strong>歯の構造</strong>: 一つの歯は片側が凸、反対側が凹になっており、スライダーを通すことで互いにロックされる。',
+                    '<strong>スライダーの調整</strong>: スムーズに歯がかみ合うよう、適切な形状と角度を設計。'
+                ],
+                'designText1': 'デザインが決まったら、次は3Dプリンターでの出力です。プリント時の密度や方向を調整しながら、',
+                'designList1': [
+                    '歯は柔軟性を持たせる',
+                    'スライダーは十分な剛性を持たせる'
+                ],
+                'designText2': 'というバランスを模索しました。しかし、初期のモデルでは思うようにスライドしなかったり、歯が壊れやすかったりと、多くの課題が発生しました。そこで、',
+                'designList2': [
+                    'デザイン・寸法の微調整',
+                    'プリント時の密度、向きの調整',
+                    '材料の選定'
+                ],
+                'designText3': 'といった工程を繰り返し、何度も試作と修正を重ねました。',
+                'prototypeCaption': '試作を重ねる過程で生まれた様々なバージョンのジッパー',
+                'testText1': '最終発表では、外部の人々を招いて、ウォークイン形式でジッパーを試してもらいました。その際のフィードバックは、',
+                'testList1': [
+                    '「ジッパーとして機能するが、実用的ではない」',
+                    '「見た目が少しダサい？」',
+                    '「スライド時がスムーズではない」'
+                ],
+                'testText2': 'といったものでした。',
+                'quoteText': '「最初のプロトタイプが完璧である必要はありません。重要なのは、フィードバックを得て、それを次の改善に活かすことです」 - 教授のアドバイス',
+                'improveText1': 'フィードバックを受けて、シンポジウムに向けて新しいバージョンに挑戦します。',
+                'improveText2': 'ジッパーのデザインとスムーズさを改良しました。新しいバージョンはより滑らかで、見た目も洗練されたものになりました。しかし、これはまだプロトタイプです。',
+                'improveText3': '次の挑戦として、',
+                'improveList1': [
+                    '異なる素材の使用',
+                    '実際の使用例見据えた強度や実用性の改良'
+                ],
+                'improveText4': 'に取り組みたいと考えています。',
+                'improvementCaption': '改良を重ねた最新バージョンのジッパー',
+                'conclusionText': 'エラーは失敗ではなく、プロセスの一部です。試行錯誤を繰り返しながら、より良いものを生み出していく。その過程こそが、このプロジェクトの核心でした。私は、この挑戦を続けることにワクワクしています。',
+                'tag1': '3Dプリント',
+                'tag2': 'デザイン',
+                'tag3': 'プロトタイピング',
+                'tag4': 'エンジニアリング',
+                'footerText': '© 2023 創造と失敗の記録. All rights reserved.'
+            },
+            'en': {
+                'blogTitle': 'Record of Creativity and Failure',
+                'languageText': '日本語',
+                'articleTitle': '3D Printed "Zipper" Project Challenge',
+                'publishDate': 'Published: December 10, 2023',
+                'updateDate': 'Updated: December 15, 2023',
+                'category': 'Category: 3D Printing',
+                'tocTitle': 'Table of Contents',
+                'tocOverview': 'Project Overview',
+                'tocDefine': 'Defining the Zipper',
+                'tocDesign': '3D Design and Trial & Error',
+                'tocTest': 'Testing and Feedback',
+                'tocImprove': 'Improvements and Next Challenges',
+                'tocConclusion': 'Conclusion',
+                'overviewText1': 'This project was part of a required first-year seminar called "First-Year Seminar", where students can choose from over 40 different courses. The aim is to broaden interests, allowing free choice regardless of major.',
+                'overviewText2': 'The course I took, "Creativity and Making Failure", focuses on developing skills to engage in creative crafts and activities, identify failures, and think about how to improve them.',
+                'overviewText3': 'This article introduces my final project - designing a functional "zipper" using a 3D printer and the process behind it.',
+                'defineText1': 'In our class, we learned that any project, not just crafts, follows the process shown in the diagram below.',
+                'diagramCaption': 'Figure: Project Process (Define → Ideate → Prototype → Test → Improve)',
+                'defineText2': 'This diagram shows that projects start from either the "Define" or "Ideate" step, set direction, complete prototypes, find errors, and then return to the initial step to overcome those errors - creating a cycle.',
+                'defineSubtitle': 'The "Define" Step',
+                'defineText3': 'When considering what a zipper is, to me it was "a fastening device that can open and close" and "a mechanism where interlocking parts engage via a slider". To recreate this basic structure, I designed the following elements:',
+                'defineList1': [
+                    '<strong>Tooth Structure</strong>: Each tooth has one convex side and one concave side, locking together when the slider passes through.',
+                    '<strong>Slider Adjustment</strong>: Designed with proper shape and angle for smooth tooth engagement.'
+                ],
+                'designText1': 'Once the design was decided, the next step was 3D printing. While adjusting print density and orientation, I aimed for:',
+                'designList1': [
+                    'Flexible teeth',
+                    'Sufficiently rigid slider'
+                ],
+                'designText2': 'However, the initial models had many issues - they didn\'t slide well and teeth broke easily. So I repeatedly:',
+                'designList2': [
+                    'Fine-tuned design and dimensions',
+                    'Adjusted print density and orientation',
+                    'Selected materials'
+                ],
+                'designText3': 'going through many iterations of prototypes and revisions.',
+                'prototypeCaption': 'Various zipper versions created through repeated prototyping',
+                'testText1': 'For the final presentation, we invited external people to try the zipper in a walk-in format. The feedback included:',
+                'testList1': [
+                    '"Functions as a zipper but not practical"',
+                    '"Looks a bit uncool?"',
+                    '"Not smooth when sliding"'
+                ],
+                'testText2': 'and similar comments.',
+                'quoteText': '"The first prototype doesn\'t need to be perfect. What\'s important is getting feedback and using it for the next improvement." - Professor\'s advice',
+                'improveText1': 'Based on feedback, I challenged myself to create a new version for the symposium.',
+                'improveText2': 'I improved the zipper\'s design and smoothness. The new version is more refined in appearance and operates more smoothly. However, this is still a prototype.',
+                'improveText3': 'For future challenges, I plan to work on:',
+                'improveList1': [
+                    'Using different materials',
+                    'Improving strength and practicality for real-world use'
+                ],
+                'improveText4': '',
+                'improvementCaption': 'The latest improved version of the zipper',
+                'conclusionText': 'Errors are not failures but part of the process. The essence of this project was the process of trial and error to create something better. I\'m excited to continue this challenge.',
+                'tag1': '3D Printing',
+                'tag2': 'Design',
+                'tag3': 'Prototyping',
+                'tag4': 'Engineering',
+                'footerText': '© 2023 Record of Creativity and Failure. All rights reserved.'
+            }
+        };
+        
+        // 現在の言語状態を管理
+        let currentLanguage = localStorage.getItem('language') || 'ja';
+        
+        // 初期言語設定
+        setLanguage(currentLanguage);
+        
+        // 言語切り替え
+        languageToggle.addEventListener('click', () => {
+            // 現在の言語をトグル
+            currentLanguage = currentLanguage === 'ja' ? 'en' : 'ja';
+            localStorage.setItem('language', currentLanguage);
+            setLanguage(currentLanguage);
+        });
+        
+        // 言語設定を適用する関数
+        function setLanguage(lang) {
+            const texts = translations[lang];
+            
+            // 各要素にテキストを適用
+            for (const [key, value] of Object.entries(texts)) {
+                const element = document.getElementById(key);
+                if (element) {
+                    if (Array.isArray(value)) {
+                        // リストアイテムの場合
+                        const items = element.querySelectorAll('li');
+                        items.forEach((item, index) => {
+                            if (value[index]) {
+                                item.innerHTML = value[index];
+                            }
+                        });
+                    } else {
+                        // 通常のテキストの場合
+                        element.textContent = value;
+                    }
+                }
+            }
+            
+            // ボタンテキスト更新
+            languageText.textContent = lang === 'ja' ? 'English' : '日本語';
+        }
+    </script>
+</body>
+</html>
